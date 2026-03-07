@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Telegram Form Notifier — Setup Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --border: #1e2330;
+    --teal: #00e5c0;
+    --blue: #3b82f6;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --step-bg: #161925;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  .wrapper { max-width: 760px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(0,229,192,.12);
+    color: var(--teal);
+    border: 1px solid rgba(0,229,192,.3);
+    padding: 4px 14px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 14px;
+  }
+  h1 span { color: var(--teal); }
+  .subtitle { color: var(--muted); font-size: 15px; line-height: 1.6; max-width: 480px; margin: 0 auto; }
+
+  /* Flow diagram */
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 56px;
+    flex-wrap: wrap;
+  }
+  .flow-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .flow-node .icon { font-size: 18px; }
+  .flow-arrow { color: var(--teal); font-size: 20px; font-weight: 700; }
+
+  /* Steps */
+  .steps { display: flex; flex-direction: column; gap: 20px; }
+
+  .step {
+    background: var(--step-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .step:hover { border-color: rgba(0,229,192,.25); }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    cursor: default;
+  }
+  .step-num {
+    min-width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0,229,192,.1);
+    border: 1.5px solid var(--teal);
+    color: var(--teal);
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .step-title { font-size: 16px; font-weight: 700; }
+  .step-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .step-body { padding: 0 24px 24px; }
+
+  .instruction {
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+  .instruction b { color: var(--text); font-weight: 600; }
+  .instruction a { color: var(--teal); text-decoration: none; }
+  .instruction a:hover { text-decoration: underline; }
+
+  /* Code blocks */
+  .code-block {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  .code-label {
+    padding: 8px 14px;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .copy-btn {
+    background: rgba(0,229,192,.1);
+    color: var(--teal);
+    border: 1px solid rgba(0,229,192,.25);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .copy-btn:hover { background: rgba(0,229,192,.2); }
+
+  pre {
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: #c9d1d9;
+    white-space: pre;
+  }
+  .hl { color: var(--teal); }
+  .cm { color: var(--muted); }
+  .str { color: #f9c74f; }
+
+  /* Info boxes */
+  .info-box {
+    background: rgba(59,130,246,.08);
+    border: 1px solid rgba(59,130,246,.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #93c5fd;
+    line-height: 1.6;
+    margin-top: 14px;
+  }
+  .info-box b { color: #bfdbfe; }
+
+  .warn-box {
+    background: rgba(249,199,74,.07);
+    border: 1px solid rgba(249,199,74,.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #fde68a;
+    line-height: 1.6;
+    margin-top: 14px;
+  }
+
+  /* Telegram preview */
+  .tg-preview {
+    background: #17212b;
+    border-radius: 12px;
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    margin-top: 14px;
+    border: 1px solid #2a3a4a;
+  }
+  .tg-preview .sender { color: var(--teal); font-weight: 600; margin-bottom: 6px; font-size: 12px; }
+  .tg-preview .msg { color: #e2e8f0; }
+  .tg-preview .msg b { color: #fff; }
+  .tg-preview .msg i { color: var(--muted); font-style: italic; }
+
+  /* Footer */
+  .footer { text-align: center; margin-top: 60px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">Setup Guide</div>
+    <h1>Get <span>Telegram alerts</span><br/>on every form submit</h1>
+    <p class="subtitle">3 steps, ~10 minutes. No third-party services needed.</p>
+  </div>
+
+  <!-- Flow -->
+  <div class="flow">
+    <div class="flow-node"><span class="icon">🌐</span> Your Website Form</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node"><span class="icon">⚡</span> Notifier Server</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node"><span class="icon">✈️</span> Your Telegram</div>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps">
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Create your Telegram Bot &amp; get your Chat ID</div>
+          <div class="step-sub">Takes 2 minutes — done entirely in Telegram</div>
+        </div>
+      </div>
+      <div class="step-body">
+        <p class="instruction">
+          <b>A) Create the bot:</b> Open Telegram and search for <a href="https://t.me/BotFather" target="_blank">@BotFather</a>.
+          Send it <code>/newbot</code>, give your bot a name, and copy the <b>Bot Token</b> it gives you.
+        </p>
+        <p class="instruction">
+          <b>B) Get your Chat ID:</b> Search for <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a>,
+          send it any message, and it will reply with your <b>Chat ID</b> (a number like <code>123456789</code>).
+        </p>
+        <div class="warn-box">⚠️ Start a conversation with your new bot first — send it <b>/start</b> — otherwise it can't message you.</div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Deploy the Notifier Server</div>
+          <div class="step-sub">Free hosting on Railway (recommended) or any Node.js host</div>
+        </div>
+      </div>
+      <div class="step-body">
+        <p class="instruction">
+          The server files are in your downloaded ZIP. Deploy them to <a href="https://railway.app" target="_blank">Railway.app</a> (free tier works fine):
+        </p>
+        <p class="instruction">
+          1. Push the folder to a <b>GitHub repo</b> (or drag-drop to Railway).<br/>
+          2. In Railway → <b>New Project → Deploy from GitHub Repo</b>.<br/>
+          3. Go to <b>Variables</b> and add these two environment variables:
+        </p>
+        <div class="code-block">
+          <div class="code-label">Environment Variables <button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="hl">TELEGRAM_BOT_TOKEN</span> = <span class="str">123456:ABCdef...</span>   <span class="cm"># from BotFather</span>
+<span class="hl">TELEGRAM_CHAT_ID</span>   = <span class="str">123456789</span>           <span class="cm"># from @userinfobot</span></pre>
+        </div>
+        <p class="instruction" style="margin-top:14px">
+          4. Railway will give you a public URL like <code>https://my-app.up.railway.app</code>. <b>Copy it</b> — you'll need it in Step 3.
+        </p>
+        <div class="info-box">
+          <b>Alternative hosts:</b> Render.com, Fly.io, Heroku, or any VPS. The server is plain Node.js with no database.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Add the snippet to your website</div>
+          <div class="step-sub">One &lt;script&gt; tag — works with any HTML form</div>
+        </div>
+      </div>
+      <div class="step-body">
+        <p class="instruction">
+          Paste this snippet just before the closing <code>&lt;/body&gt;</code> tag on any page that has a form.
+          Replace <b>YOUR_SERVER_URL</b> with the Railway URL from Step 2.
+        </p>
+        <div class="code-block">
+          <div class="code-label">website-snippet.html <button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="cm">&lt;!-- Paste before &lt;/body&gt; --&gt;</span>
+<span class="hl">&lt;script&gt;</span>
+(function () {
+  <span class="cm">// 👇 Replace with your Railway URL</span>
+  const NOTIFY_URL = <span class="str">"https://YOUR_SERVER_URL/notify"</span>;
+
+  document.addEventListener(<span class="str">"submit"</span>, async function (e) {
+    const form = e.target;
+    const data = {};
+    new FormData(form).forEach((v, k) => data[k] = v);
+
+    try {
+      await fetch(NOTIFY_URL, {
+        method: <span class="str">"POST"</span>,
+        headers: { <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span> },
+        body: JSON.stringify(data),
+      });
+    } catch (err) {
+      console.warn(<span class="str">"Notifier:"</span>, err.message);
+    }
+  });
+})();
+<span class="hl">&lt;/script&gt;</span></pre>
+        </div>
+        <p class="instruction" style="margin-top:16px">That's it! Here's what you'll receive in Telegram:</p>
+        <div class="tg-preview">
+          <div class="sender">🤖 Your Bot</div>
+          <div class="msg">
+            🔔 <b>New Form Submission</b><br/>
+            ━━━━━━━━━━━━━━━━━━━━<br/>
+            &nbsp;&nbsp;• <b>name:</b> Jane Doe<br/>
+            &nbsp;&nbsp;• <b>email:</b> jane@example.com<br/>
+            &nbsp;&nbsp;• <b>message:</b> I'd like to get a quote<br/>
+            ━━━━━━━━━━━━━━━━━━━━<br/>
+            🌐 <i>Source: https://yourwebsite.com</i><br/>
+            🕐 <i>Sat, 07 Mar 2026 10:24:01 GMT</i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /steps -->
+
+  <div class="footer">
+    Questions? Share the error message and I'll help you debug it.
+  </div>
+
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+</script>
+</body>
+</html>
